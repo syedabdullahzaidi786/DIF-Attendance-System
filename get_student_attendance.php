@@ -34,6 +34,8 @@ $total_days = count($attendance_records);
 $present_days = 0;
 $absent_days = 0;
 $leave_days = 0;
+$half_days = 0;
+$holiday_days = 0;
 
 foreach ($attendance_records as $record) {
     switch($record['status']) {
@@ -45,6 +47,12 @@ foreach ($attendance_records as $record) {
             break;
         case 'leave':
             $leave_days++;
+            break;
+        case 'half_day':
+            $half_days++;
+            break;
+        case 'holi_day':
+            $holiday_days++;
             break;
     }
 }
@@ -75,7 +83,7 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
             </div>
         </div>
         <div class="col-md-3">
-            <div class="attendance-stats" style="background-color: #fff3cd; color: #856404;">
+            <div class="attendance-stats leave">
                 <h5>Leave Days</h5>
                 <h3><?php echo $leave_days; ?></h3>
             </div>
@@ -84,6 +92,20 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
             <div class="attendance-stats" style="background-color: #cce5ff; color: #004085;">
                 <h5>Attendance %</h5>
                 <h3><?php echo $attendance_percentage; ?>%</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <div class="attendance-stats" style="background-color: #ffeeba; color: #856404;">
+                <h5>Half Days</h5>
+                <h3><?php echo $half_days; ?></h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="attendance-stats" style="background-color: #e2e3e5; color: #383d41;">
+                <h5>Holidays</h5>
+                <h3><?php echo $holiday_days; ?></h3>
             </div>
         </div>
     </div>
@@ -109,20 +131,32 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
                     <td>
                         <?php
                         $status_class = '';
+                        $status_text = '';
                         switch($record['status']) {
                             case 'present':
-                                $status_class = 'bg-success';
+                                $status_class = 'bg-success text-white';
+                                $status_text = 'Present';
                                 break;
                             case 'absent':
-                                $status_class = 'bg-danger';
+                                $status_class = 'bg-danger text-white';
+                                $status_text = 'Absent';
                                 break;
                             case 'leave':
                                 $status_class = 'bg-warning text-dark';
+                                $status_text = 'Leave';
+                                break;
+                            case 'half_day':
+                                $status_class = 'bg-info text-white';
+                                $status_text = 'Half Day';
+                                break;
+                            case 'holi_day':
+                                $status_class = 'bg-secondary text-white';
+                                $status_text = 'Holiday';
                                 break;
                         }
                         ?>
-                        <span class="badge <?php echo $status_class; ?>">
-                            <?php echo ucfirst($record['status']); ?>
+                        <span class="badge rounded-pill <?php echo $status_class; ?> p-2" style="min-width: 80px; display: inline-block; text-align: center;">
+                            <?php echo $status_text; ?>
                         </span>
                     </td>
                     <td><?php echo htmlspecialchars($record['notes'] ?? ''); ?></td>

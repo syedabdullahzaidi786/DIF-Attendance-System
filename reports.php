@@ -22,6 +22,7 @@ $query = "
     LEFT JOIN attendance a ON s.id = a.student_id 
         AND MONTH(a.date) = ? 
         AND YEAR(a.date) = ?
+        AND a.status != 'Holiday'  -- Exclude holidays
     WHERE 1=1
 ";
 
@@ -50,7 +51,7 @@ $filters = $stmt->fetchAll();
 $total_students = count($records);
 $total_present = array_sum(array_column($records, 'present_days'));
 $total_days = array_sum(array_column($records, 'total_days'));
-$overall_attendance = $total_days > 0 ? round(($total_present / $total_days) * 100, 2) : 0;
+$overall_attendance = $total_present > 0 ? round(($total_present / $total_days) * 100, 2) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -32,7 +32,17 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                         <i class="fas fa-camera me-1"></i>Quick Scan
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'update_attendance.php' ? 'active' : ''; ?>" href="update_attendance.php">
+                        <i class="fas fa-edit me-1"></i>Update Attendance
+                    </a>
+                </li>
                 <?php if ($user_role == 'admin'): ?>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'mark_all_attendance.php' ? 'active' : ''; ?>" href="mark_all_attendance.php">
+                        <i class="fas fa-calendar-check me-1"></i>Mark All
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'students.php' ? 'active' : ''; ?>" href="students.php">
                         <i class="fas fa-user-graduate me-1"></i>Students
