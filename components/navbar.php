@@ -10,7 +10,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
     <div class="container-fluid">
         <a class="navbar-brand" href="dashboard.php">
             <img src="assets/images/dif_logo.png" alt="DIF Logo" style="width: 35px; height: 35px; object-fit: contain; margin-right: 10px;">
-            <span>DIF School System</span>
+            <span>DIF Sec School</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

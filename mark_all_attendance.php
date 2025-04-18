@@ -7,35 +7,66 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once 'config/database.php';
 
+// Get all classes and sections for dropdowns
+try {
+    $classStmt = $pdo->query("SELECT DISTINCT class FROM students ORDER BY class");
+    $classes = $classStmt->fetchAll(PDO::FETCH_COLUMN);
+    
+    $sectionStmt = $pdo->query("SELECT DISTINCT section FROM students ORDER BY section");
+    $sections = $sectionStmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    $error = "Error fetching classes and sections: " . $e->getMessage();
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date = $_POST['date'];
     $status = $_POST['status'];
+    $class = $_POST['class'] ?? null;
+    $section = $_POST['section'] ?? null;
+    $note = $_POST['note'] ?? null;
     
     try {
-        // Get all students
-        $stmt = $pdo->prepare("SELECT id FROM students");
-        $stmt->execute();
-        $students = $stmt->fetchAll();
+        // Build the query based on selected filters
+        $query = "SELECT id FROM students WHERE 1=1";
+        $params = [];
         
-        // Get admin user ID for marking attendance
-        $adminStmt = $pdo->prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
-        $adminStmt->execute();
-        $admin = $adminStmt->fetch();
-        $adminId = $admin['id'];
-        
-        // Mark attendance for all students
-        $insertStmt = $pdo->prepare("
-            INSERT INTO attendance (student_id, date, status, marked_by, is_auto_marked) 
-            VALUES (?, ?, ?, ?, FALSE)
-            ON DUPLICATE KEY UPDATE status = VALUES(status)
-        ");
-        
-        foreach ($students as $student) {
-            $insertStmt->execute([$student['id'], $date, $status, $adminId]);
+        if ($class) {
+            $query .= " AND class = ?";
+            $params[] = $class;
         }
         
-        $success = "Attendance marked successfully for all students on " . date('d-m-Y', strtotime($date));
+        if ($section) {
+            $query .= " AND section = ?";
+            $params[] = $section;
+        }
+        
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($params);
+        $students = $stmt->fetchAll();
+        
+        if (empty($students)) {
+            $error = "No students found matching the selected criteria.";
+        } else {
+            // Get admin user ID for marking attendance
+            $adminStmt = $pdo->prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
+            $adminStmt->execute();
+            $admin = $adminStmt->fetch();
+            $adminId = $admin['id'];
+            
+            // Mark attendance for filtered students
+            $insertStmt = $pdo->prepare("
+                INSERT INTO attendance (student_id, date, status, marked_by, is_auto_marked, notes) 
+                VALUES (?, ?, ?, ?, FALSE, ?)
+                ON DUPLICATE KEY UPDATE status = VALUES(status), notes = VALUES(notes)
+            ");
+            
+            foreach ($students as $student) {
+                $insertStmt->execute([$student['id'], $date, $status, $adminId, $note]);
+            }
+            
+            $success = "Attendance marked successfully for " . count($students) . " students on " . date('d-m-Y', strtotime($date));
+        }
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
     }
@@ -82,6 +113,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
                             
                             <div class="mb-3">
+                                <label for="class" class="form-label">Class (Optional)</label>
+                                <select class="form-select" id="class" name="class">
+                                    <option value="">All Classes</option>
+                                    <?php foreach ($classes as $class): ?>
+                                        <option value="<?php echo htmlspecialchars($class); ?>">
+                                            <?php echo htmlspecialchars($class); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="section" class="form-label">Section (Optional)</label>
+                                <select class="form-select" id="section" name="section">
+                                    <option value="">All Sections</option>
+                                    <?php foreach ($sections as $section): ?>
+                                        <option value="<?php echo htmlspecialchars($section); ?>">
+                                            <?php echo htmlspecialchars($section); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-select" id="status" name="status" required>
                                     <option value="present">Present</option>
@@ -90,6 +145,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <option value="half_day">Half Day</option>
                                     <option value="holi_day">Holi Day</option>
                                 </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Note (Optional)</label>
+                                <textarea class="form-control" id="note" name="note" rows="3" 
+                                          placeholder="Enter any additional notes or remarks"></textarea>
                             </div>
                             
                             <button type="submit" class="btn btn-primary w-100">

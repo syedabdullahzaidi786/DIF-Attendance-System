@@ -16,6 +16,20 @@ if (isset($_POST['delete_student'])) {
     exit();
 }
 
+// Handle student update
+if (isset($_POST['update_student'])) {
+    $student_id = $_POST['student_id'];
+    $roll_number = $_POST['roll_number'];
+    $name = $_POST['name'];
+    $class = $_POST['class'];
+    $section = $_POST['section'];
+    
+    $stmt = $pdo->prepare("UPDATE students SET roll_number = ?, name = ?, class = ?, section = ? WHERE id = ?");
+    $stmt->execute([$roll_number, $name, $class, $section, $student_id]);
+    header("Location: students.php?msg=updated");
+    exit();
+}
+
 // Get all students
 $stmt = $pdo->query("SELECT * FROM students ORDER BY class, section, roll_number");
 $students = $stmt->fetchAll();
@@ -113,6 +127,13 @@ foreach ($students as $student) {
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <?php endif; ?>
+                        
+                        <?php if(isset($_GET['msg']) && $_GET['msg'] == 'updated'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>Student updated successfully!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="table-responsive">
                             <table class="table table-hover" id="studentsTable">
@@ -204,6 +225,47 @@ foreach ($students as $student) {
         </div>
     </div>
 
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2"></i>Edit Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="students.php" method="POST">
+                    <input type="hidden" name="student_id" id="edit_student_id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_roll_number" class="form-label">GR Number</label>
+                            <input type="text" class="form-control" id="edit_roll_number" name="roll_number" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_name" class="form-label">Student Name</label>
+                            <input type="text" class="form-control" id="edit_name" name="name" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_class" class="form-label">Class</label>
+                            <input type="text" class="form-control" id="edit_class" name="class" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_section" class="form-label">Section</label>
+                            <input type="text" class="form-control" id="edit_section" name="section" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" name="update_student" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- QR Code Modal -->
     <div class="modal fade" id="qrModal" tabindex="-1">
         <div class="modal-dialog">
@@ -252,14 +314,27 @@ foreach ($students as $student) {
         });
 
         function showQRCode(qrCode) {
-            const modal = new bootstrap.Modal(document.getElementById('qrModal'));
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            new QRCode(qrcodeDiv, qrCode, {
-                width: 256,
-                height: 256
+            $('#qrcode').empty();
+            new QRCode(document.getElementById("qrcode"), qrCode);
+            $('#qrModal').modal('show');
+        }
+
+        function editStudent(studentId) {
+            // Fetch student data using AJAX
+            $.ajax({
+                url: 'get_student.php',
+                type: 'GET',
+                data: { id: studentId },
+                success: function(response) {
+                    const student = JSON.parse(response);
+                    $('#edit_student_id').val(student.id);
+                    $('#edit_roll_number').val(student.roll_number);
+                    $('#edit_name').val(student.name);
+                    $('#edit_class').val(student.class);
+                    $('#edit_section').val(student.section);
+                    $('#editStudentModal').modal('show');
+                }
             });
-            modal.show();
         }
 
         function deleteStudent(studentId) {
@@ -283,10 +358,6 @@ foreach ($students as $student) {
                 document.body.appendChild(form);
                 form.submit();
             }
-        }
-
-        function editStudent(studentId) {
-            window.location.href = `edit_student.php?id=${studentId}`;
         }
     </script>
 </body>
