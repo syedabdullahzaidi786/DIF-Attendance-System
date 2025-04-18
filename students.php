@@ -21,11 +21,12 @@ if (isset($_POST['update_student'])) {
     $student_id = $_POST['student_id'];
     $roll_number = $_POST['roll_number'];
     $name = $_POST['name'];
+    $father_name = $_POST['father_name'];
     $class = $_POST['class'];
     $section = $_POST['section'];
     
-    $stmt = $pdo->prepare("UPDATE students SET roll_number = ?, name = ?, class = ?, section = ? WHERE id = ?");
-    $stmt->execute([$roll_number, $name, $class, $section, $student_id]);
+    $stmt = $pdo->prepare("UPDATE students SET roll_number = ?, student_name = ?, father_name = ?, class = ?, section = ? WHERE id = ?");
+    $stmt->execute([$roll_number, $name, $father_name, $class, $section, $student_id]);
     header("Location: students.php?msg=updated");
     exit();
 }
@@ -39,12 +40,18 @@ $total_students = count($students);
 
 // Get students by class
 $class_counts = [];
+$section_counts = [];
 foreach ($students as $student) {
     $class = $student['class'] . '-' . $student['section'];
     if (!isset($class_counts[$class])) {
         $class_counts[$class] = 0;
     }
     $class_counts[$class]++;
+    
+    // Count unique sections
+    if (!isset($section_counts[$student['section']])) {
+        $section_counts[$student['section']] = 1;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -57,6 +64,15 @@ foreach ($students as $student) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <style>
+        .highlight {
+            background-color: #fff3cd !important;
+            transition: background-color 0.3s ease;
+        }
+        .dataTables_filter input {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <?php include 'components/navbar.php'; ?>
@@ -99,8 +115,8 @@ foreach ($students as $student) {
                                     <div class="stats-icon">
                                         <i class="fas fa-id-card"></i>
                                     </div>
-                                    <div class="stats-number"><?php echo $total_students; ?></div>
-                                    <div class="stats-label">ID Cards Generated</div>
+                                    <div class="stats-number"><?php echo count($section_counts); ?></div>
+                                    <div class="stats-label">Total Sections</div>
                                 </div>
                             </div>
                         </div>
@@ -141,6 +157,7 @@ foreach ($students as $student) {
                                     <tr>
                                         <th>GR Number</th>
                                         <th>Name</th>
+                                        <th>Father Name</th>
                                         <th>Class</th>
                                         <th>Section</th>
                                         <th>QR Code</th>
@@ -151,11 +168,12 @@ foreach ($students as $student) {
                                     <?php foreach($students as $student): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($student['roll_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['student_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['father_name']); ?></td>
                                         <td><?php echo htmlspecialchars($student['class']); ?></td>
                                         <td><?php echo htmlspecialchars($student['section']); ?></td>
                                         <td>
-                                            <button class="btn btn-sm btn-info" onclick="showQRCode('<?php echo $student['qr_code']; ?>')">
+                                            <button class="btn btn-sm btn-info" onclick="showQRCode('<?php echo htmlspecialchars($student['qr_code']); ?>')">
                                                 <i class="fas fa-qrcode"></i> View QR
                                             </button>
                                         </td>
@@ -206,6 +224,10 @@ foreach ($students as $student) {
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                         <div class="mb-3">
+                            <label for="father_name" class="form-label">Father Name</label>
+                            <input type="text" class="form-control" id="father_name" name="father_name" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="class" class="form-label">Class</label>
                             <input type="text" class="form-control" id="class" name="class" required>
                         </div>
@@ -245,6 +267,10 @@ foreach ($students as $student) {
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Student Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_father_name" class="form-label">Father Name</label>
+                            <input type="text" class="form-control" id="edit_father_name" name="father_name" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="edit_class" class="form-label">Class</label>
@@ -303,12 +329,41 @@ foreach ($students as $student) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#studentsTable').DataTable({
+            var table = $('#studentsTable').DataTable({
                 order: [[2, 'asc'], [3, 'asc'], [0, 'asc']],
                 pageLength: 10,
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search students..."
+                }
+            });
+
+            // Add event listener for search input
+            $('.dataTables_filter input').on('keyup', function() {
+                var searchTerm = $(this).val().toLowerCase().trim();
+                
+                // Remove highlight from all rows
+                $('tbody tr').removeClass('highlight');
+                
+                if (searchTerm.length >= 2) { // Only search if at least 2 characters
+                    // Search through each row
+                    $('tbody tr').each(function() {
+                        var row = $(this);
+                        var found = false;
+                        
+                        // Check each cell in the row
+                        row.find('td').each(function() {
+                            var cellText = $(this).text().toLowerCase().trim();
+                            if (cellText.includes(searchTerm)) {
+                                found = true;
+                                return false; // Break the loop if found
+                            }
+                        });
+                        
+                        if (found) {
+                            row.addClass('highlight');
+                        }
+                    });
                 }
             });
         });
@@ -329,7 +384,8 @@ foreach ($students as $student) {
                     const student = JSON.parse(response);
                     $('#edit_student_id').val(student.id);
                     $('#edit_roll_number').val(student.roll_number);
-                    $('#edit_name').val(student.name);
+                    $('#edit_name').val(student.student_name);
+                    $('#edit_father_name').val(student.father_name);
                     $('#edit_class').val(student.class);
                     $('#edit_section').val(student.section);
                     $('#editStudentModal').modal('show');

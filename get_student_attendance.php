@@ -61,10 +61,11 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
 ?>
 
 <div class="student-info mb-4">
-    <h4><?php echo htmlspecialchars($student['name']); ?></h4>
+    <h4><?php echo htmlspecialchars($student['student_name']); ?></h4>
     <p class="text-muted">
         Roll No: <?php echo htmlspecialchars($student['roll_number']); ?> | 
-        Class: <?php echo htmlspecialchars($student['class']); ?>-<?php echo htmlspecialchars($student['section']); ?>
+        Class: <?php echo htmlspecialchars($student['class']); ?>-<?php echo htmlspecialchars($student['section']); ?> |
+        Father Name: <?php echo htmlspecialchars($student['father_name']); ?>
     </p>
 </div>
 

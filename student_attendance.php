@@ -117,7 +117,7 @@ if (isset($_GET['student_id'])) {
                                     <?php foreach($students as $student): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($student['roll_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['student_name']); ?></td>
                                         <td><?php echo htmlspecialchars($student['class']); ?></td>
                                         <td><?php echo htmlspecialchars($student['section']); ?></td>
                                         <td><?php echo $student['total_attendance']; ?></td>

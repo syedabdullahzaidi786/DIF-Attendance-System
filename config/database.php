@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'school_attendance';
+$dbname = 'difs_attendance_system';
 $username = 'root';
 $password = '';
 

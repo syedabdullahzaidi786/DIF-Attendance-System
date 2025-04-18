@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->execute([$student['id'], $date, $status, $_POST['notes'] ?? '', $_SESSION['user_id']]);
             }
             
-            $success = "Attendance updated successfully for " . $student['name'];
+            $success = "Attendance updated successfully for " . $student['student_name'];
             $step = 1; // Reset to step 1 after successful update
             
         } catch (Exception $e) {
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <form method="POST" action="">
                             <input type="hidden" name="step1" value="1">
                             <div class="mb-3">
-                                <label for="roll_number" class="form-label">Enter Roll Number</label>
+                                <label for="roll_number" class="form-label">Enter GR Number</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="roll_number" name="roll_number" 
                                            value="<?php echo $_POST['roll_number'] ?? ''; ?>" required>
@@ -145,7 +145,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="mb-4">
                             <div class="alert alert-info">
                                 <h5 class="mb-1">Student Details:</h5>
-                                <p class="mb-1"><strong>Name:</strong> <?php echo $student['name']; ?></p>
+                                <p class="mb-1"><strong>Name:</strong> <?php echo $student['student_name']; ?></p>
+                                <p class="mb-1"><strong>Father Name:</strong> <?php echo $student['father_name']; ?></p>
                                 <p class="mb-1"><strong>Class:</strong> <?php echo $student['class']; ?></p>
                                 <p class="mb-0"><strong>Section:</strong> <?php echo $student['section']; ?></p>
                             </div>

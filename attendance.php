@@ -192,7 +192,7 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="roll-tab" data-bs-toggle="tab" data-bs-target="#roll-content" type="button" role="tab" aria-controls="roll-content" aria-selected="false">
-                                    <i class="fas fa-id-card me-2"></i>Roll Number
+                                    <i class="fas fa-id-card me-2"></i>GR Number
                                 </button>
                             </li>
                         </ul>
@@ -217,9 +217,9 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                             <div class="tab-pane fade" id="roll-content" role="tabpanel" aria-labelledby="roll-tab">
                                 <div class="roll-number-form">
                                     <div class="mb-3">
-                                        <label for="rollNumber" class="form-label">Enter Roll Number</label>
+                                        <label for="rollNumber" class="form-label">Enter GR Number</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="rollNumber" placeholder="Enter student roll number">
+                                            <input type="text" class="form-control" id="rollNumber" placeholder="Enter Student GR Number">
                                             <button class="btn btn-primary" type="button" id="markByRollBtn">
                                                 <i class="fas fa-check me-2"></i>Mark Attendance
                                             </button>
@@ -252,7 +252,7 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                                         <tbody id="attendanceList">
                                             <?php
                                             $stmt = $pdo->prepare("
-                                                SELECT a.*, s.name, s.class, s.section
+                                                SELECT a.*, s.student_name, s.class, s.section
                                                 FROM attendance a
                                                 JOIN students s ON a.student_id = s.id
                                                 WHERE a.date = ?
@@ -261,8 +261,8 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                                             $stmt->execute([$today]);
                                             while ($row = $stmt->fetch()) {
                                                 echo "<tr>";
-                                                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                                        echo "<td>" . htmlspecialchars($row['class'] . "-" . $row['section']) . "</td>";
+                                                echo "<td>" . htmlspecialchars($row['student_name']) . "</td>";
+                                                echo "<td>" . htmlspecialchars($row['class'] . "-" . $row['section']) . "</td>";
                                                 echo "<td><span class='badge bg-success'>Present</span></td>";
                                                 echo "<td>" . date('h:i A', strtotime($row['created_at'])) . "</td>";
                                                 echo "</tr>";

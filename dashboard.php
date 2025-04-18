@@ -27,7 +27,7 @@ $total_users = $stmt->fetchColumn();
 
 // Get recent attendance records
 $stmt = $pdo->prepare("
-    SELECT a.*, s.name as student_name, s.class, s.section 
+    SELECT a.*, s.student_name, s.class, s.section 
     FROM attendance a 
     JOIN students s ON a.student_id = s.id 
     ORDER BY a.date DESC 

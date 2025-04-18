@@ -25,7 +25,7 @@ if ($student_id > 0) {
 }
 
 // Get all students for dropdown
-$stmt = $pdo->prepare("SELECT id, name, class, section, roll_number FROM students ORDER BY class, section, name");
+$stmt = $pdo->prepare("SELECT id, student_name, class, section, roll_number FROM students ORDER BY class, section, student_name");
 $stmt->execute();
 $students = $stmt->fetchAll();
 
@@ -376,7 +376,7 @@ foreach ($students as $s) {
                                             <div class="label">
                                                 <i class="fas fa-user"></i>Name
                                             </div>
-                                            <div class="value"><?php echo htmlspecialchars($student['name']); ?></div>
+                                            <div class="value"><?php echo htmlspecialchars($student['student_name']); ?></div>
                                             
                                             <div class="label">
                                                 <i class="fas fa-id-badge"></i>Roll No

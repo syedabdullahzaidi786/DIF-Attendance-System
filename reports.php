@@ -15,7 +15,7 @@ $section = $_GET['section'] ?? '';
 
 // Build query
 $query = "
-    SELECT s.id, s.roll_number, s.name, s.class, s.section,
+    SELECT s.id, s.roll_number, s.student_name, s.class, s.section,
            COUNT(a.id) as present_days,
            COUNT(DISTINCT DATE(a.date)) as total_days
     FROM students s
@@ -176,7 +176,7 @@ $overall_attendance = $total_present > 0 ? round(($total_present / $total_days) 
                                     <i class="fas fa-undo me-2"></i>Reset
                                 </a>
                                 <button type="button" class="btn btn-success" onclick="exportToExcel()">
-                                    <i class="fas fa-file-excel me-2"></i>Export to Excel
+                                    <i class="fas fa-file-excel me-2"></i>Export to CSV
                                 </button>
                             </div>
                         </form>
@@ -211,7 +211,7 @@ $overall_attendance = $total_present > 0 ? round(($total_present / $total_days) 
                                     <?php foreach ($records as $record): ?>
                                         <tr>
                                             <td><?= htmlspecialchars($record['roll_number']) ?></td>
-                                            <td><?= htmlspecialchars($record['name']) ?></td>
+                                            <td><?= htmlspecialchars($record['student_name']) ?></td>
                                             <td><?= htmlspecialchars($record['class']) ?></td>
                                             <td><?= htmlspecialchars($record['section']) ?></td>
                                             <td><?= $record['present_days'] ?></td>
