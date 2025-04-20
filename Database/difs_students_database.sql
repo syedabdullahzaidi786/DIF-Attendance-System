@@ -24,11 +24,42 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `students`
+--
+
+CREATE TABLE `students` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roll_number` int(11) DEFAULT NULL,
+  `student_name` varchar(255) NOT NULL,
+  `father_name` varchar(255) DEFAULT NULL,
+  `class` varchar(50) DEFAULT NULL,
+  `section` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','teacher') NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `attendance`
 --
 
 CREATE TABLE `attendance` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `student_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `status` enum('present','absent','leave','half_day','holi_day') NOT NULL,
@@ -36,23 +67,15 @@ CREATE TABLE `attendance` (
   `marked_by` int(11) NOT NULL,
   `is_auto_marked` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student_date` (`student_id`,`date`),
+  KEY `marked_by` (`marked_by`),
+  CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `attendance_ibfk_2` FOREIGN KEY (`marked_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
-
---
--- Table structure for table `students`
---
-
-CREATE TABLE `students` (
-  `id` int(11) NOT NULL,
-  `roll_number` int(11) DEFAULT NULL,
-  `student_name` varchar(255) NOT NULL,
-  `father_name` varchar(255) DEFAULT NULL,
-  `class` varchar(50) DEFAULT NULL,
-  `section` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `students`
@@ -924,8 +947,7 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (863, 1542, 'HAFSA', 'MUHAMMAD ZEESHAN', 'SENIOR LEVEL 2', 'A'),
 (864, 1543, 'ABUBAKAR AKBAR', 'AKBAR HUSSAIN', 'SENIOR LEVEL 2', 'A'),
 (865, 1544, 'MUHAMMAD AHTISHAM', 'MUHAMMAD QASIM YOUSUF', 'SENIOR LEVEL 2', 'C'),
-(866, 1545, 'KASHAF ZEESHAN', 'ZEESHAN HAMEED', 'SENIOR LEVEL 2', 'C');
-INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `class`, `section`) VALUES
+(866, 1545, 'KASHAF ZEESHAN', 'ZEESHAN HAMEED', 'SENIOR LEVEL 2', 'C'),
 (867, 1547, 'RABAIL FATIMA', 'MUHAMMAD ATIF', 'SENIOR LEVEL 2', 'B'),
 (868, 1548, 'MUHAMMAD ABU HURAIRA', 'ARIF YASEEN', 'SENIOR LEVEL 2', 'A'),
 (869, 1549, 'ABDUL BARI', 'ABDUL KALAM', 'SENIOR LEVEL 2', 'B'),
@@ -1589,7 +1611,3 @@ ALTER TABLE `attendance`
   ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
   ADD CONSTRAINT `attendance_ibfk_2` FOREIGN KEY (`marked_by`) REFERENCES `users` (`id`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

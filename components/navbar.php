@@ -44,6 +44,11 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'update_all_attendance.php' ? 'active' : ''; ?>" href="update_all_attendance.php">
+                        <i class="fas fa-calendar-plus me-1"></i>Update All
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'students.php' ? 'active' : ''; ?>" href="students.php">
                         <i class="fas fa-user-graduate me-1"></i>Students
                     </a>

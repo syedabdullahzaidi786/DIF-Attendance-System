@@ -16,13 +16,18 @@ $section = $_GET['section'] ?? '';
 // Build query
 $query = "
     SELECT s.id, s.roll_number, s.student_name, s.class, s.section,
-           COUNT(a.id) as present_days,
-           COUNT(DISTINCT DATE(a.date)) as total_days
+           SUM(CASE 
+               WHEN a.status = 'present' THEN 1
+               WHEN a.status = 'half_day' THEN 0.5
+               ELSE 0
+           END) as present_days,
+           SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent_days,
+           SUM(CASE WHEN a.status = 'leave' THEN 1 ELSE 0 END) as leave_days,
+           COUNT(DISTINCT CASE WHEN a.status != 'holi_day' THEN DATE(a.date) END) as working_days
     FROM students s
     LEFT JOIN attendance a ON s.id = a.student_id 
         AND MONTH(a.date) = ? 
         AND YEAR(a.date) = ?
-        AND a.status != 'Holiday'  -- Exclude holidays
     WHERE 1=1
 ";
 
@@ -50,8 +55,10 @@ $filters = $stmt->fetchAll();
 // Calculate statistics
 $total_students = count($records);
 $total_present = array_sum(array_column($records, 'present_days'));
-$total_days = array_sum(array_column($records, 'total_days'));
-$overall_attendance = $total_present > 0 ? round(($total_present / $total_days) * 100, 2) : 0;
+$total_absent = array_sum(array_column($records, 'absent_days'));
+$total_leave = array_sum(array_column($records, 'leave_days'));
+$total_working_days = array_sum(array_column($records, 'working_days'));
+$overall_attendance = $total_working_days > 0 ? round(($total_present / $total_working_days) * 100, 2) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,8 +108,8 @@ $overall_attendance = $total_present > 0 ? round(($total_present / $total_days) 
                     <div class="stats-icon">
                         <i class="fas fa-calendar"></i>
                     </div>
-                    <div class="stats-number"><?php echo $total_days; ?></div>
-                    <div class="stats-label">Total Days</div>
+                    <div class="stats-number"><?php echo $total_working_days; ?></div>
+                    <div class="stats-label">Total Working Days</div>
                 </div>
             </div>
             <div class="col-md-3">
@@ -202,7 +209,9 @@ $overall_attendance = $total_present > 0 ? round(($total_present / $total_days) 
                                         <th>Class</th>
                                         <th>Section</th>
                                         <th>Present Days</th>
-                                        <th>Total Days</th>
+                                        <th>Absent Days</th>
+                                        <th>Leave Days</th>
+                                        <th>Working Days</th>
                                         <th>Attendance %</th>
                                         <th>Details</th>
                                     </tr>
@@ -214,12 +223,14 @@ $overall_attendance = $total_present > 0 ? round(($total_present / $total_days) 
                                             <td><?= htmlspecialchars($record['student_name']) ?></td>
                                             <td><?= htmlspecialchars($record['class']) ?></td>
                                             <td><?= htmlspecialchars($record['section']) ?></td>
-                                            <td><?= $record['present_days'] ?></td>
-                                            <td><?= $record['total_days'] ?: 0 ?></td>
+                                            <td><?= number_format($record['present_days'], 1) ?></td>
+                                            <td><?= $record['absent_days'] ?></td>
+                                            <td><?= $record['leave_days'] ?></td>
+                                            <td><?= $record['working_days'] ?></td>
                                             <td>
                                                 <?php
-                                                $percentage = $record['total_days'] > 0 
-                                                    ? round(($record['present_days'] / $record['total_days']) * 100, 2)
+                                                $percentage = $record['working_days'] > 0 
+                                                    ? round(($record['present_days'] / $record['working_days']) * 100, 2)
                                                     : 0;
                                                 $color = $percentage >= 75 ? 'success' : ($percentage >= 60 ? 'warning' : 'danger');
                                                 ?>

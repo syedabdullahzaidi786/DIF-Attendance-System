@@ -9,17 +9,24 @@ if (!isset($_SESSION['user_id'])) {
 
 // Get all students with their attendance records
 $stmt = $pdo->query("
-    SELECT s.*, 
-           COUNT(a.id) as total_attendance,
-           SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present_count,
-           SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent_count,
-           SUM(CASE WHEN a.status = 'leave' THEN 1 ELSE 0 END) as leave_count
+    SELECT 
+        s.id,
+        s.roll_number,
+        s.student_name,
+        s.class,
+        s.section,
+        COUNT(DISTINCT a.id) as total_attendance,
+        SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present_count,
+        SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent_count,
+        SUM(CASE WHEN a.status = 'leave' THEN 1 ELSE 0 END) as leave_count,
+        SUM(CASE WHEN a.status = 'half_day' THEN 0.5 ELSE 0 END) as half_day_count,
+        SUM(CASE WHEN a.status = 'holi_day' THEN 1 ELSE 0 END) as holi_day_count
     FROM students s
     LEFT JOIN attendance a ON s.id = a.student_id
-    GROUP BY s.id
+    GROUP BY s.id, s.roll_number, s.student_name, s.class, s.section
     ORDER BY s.class, s.section, s.roll_number
 ");
-$students = $stmt->fetchAll();
+$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get total students count
 $total_students = count($students);
@@ -38,14 +45,19 @@ foreach ($students as $student) {
 if (isset($_GET['student_id'])) {
     $student_id = $_GET['student_id'];
     $stmt = $pdo->prepare("
-        SELECT a.*, s.name, s.roll_number, s.class, s.section
+        SELECT 
+            a.*,
+            s.student_name,
+            s.roll_number,
+            s.class,
+            s.section
         FROM attendance a
         JOIN students s ON a.student_id = s.id
         WHERE a.student_id = ?
         ORDER BY a.date DESC
     ");
     $stmt->execute([$student_id]);
-    $attendance_records = $stmt->fetchAll();
+    $attendance_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>
@@ -114,14 +126,20 @@ if (isset($_GET['student_id'])) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach($students as $student): ?>
+                                    <?php foreach($students as $student): 
+                                        $total_present = $student['present_count'] + $student['half_day_count'];
+                                        $working_days = $student['total_attendance'] - $student['holi_day_count'];
+                                        $attendance_percentage = $working_days > 0 
+                                            ? round(($total_present / $working_days) * 100, 2) 
+                                            : 0;
+                                    ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($student['roll_number']); ?></td>
                                         <td><?php echo htmlspecialchars($student['student_name']); ?></td>
                                         <td><?php echo htmlspecialchars($student['class']); ?></td>
                                         <td><?php echo htmlspecialchars($student['section']); ?></td>
-                                        <td><?php echo $student['total_attendance']; ?></td>
-                                        <td><?php echo $student['present_count']; ?></td>
+                                        <td><?php echo $working_days; ?></td>
+                                        <td><?php echo number_format($total_present, 1); ?></td>
                                         <td><?php echo $student['absent_count']; ?></td>
                                         <td><?php echo $student['leave_count']; ?></td>
                                         <td>

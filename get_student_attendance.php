@@ -49,7 +49,7 @@ foreach ($attendance_records as $record) {
             $leave_days++;
             break;
         case 'half_day':
-            $half_days++;
+            $half_days += 0.5;
             break;
         case 'holi_day':
             $holiday_days++;
@@ -57,7 +57,9 @@ foreach ($attendance_records as $record) {
     }
 }
 
-$attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) * 100, 2) : 0;
+$working_days = $total_days - $holiday_days;
+$total_present = $present_days + $half_days;
+$attendance_percentage = $working_days > 0 ? round(($total_present / $working_days) * 100, 2) : 0;
 ?>
 
 <div class="student-info mb-4">
@@ -74,7 +76,7 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
         <div class="col-md-3">
             <div class="attendance-stats present">
                 <h5>Present Days</h5>
-                <h3><?php echo $present_days; ?></h3>
+                <h3><?php echo number_format($total_present, 1); ?></h3>
             </div>
         </div>
         <div class="col-md-3">
@@ -107,6 +109,12 @@ $attendance_percentage = $total_days > 0 ? round(($present_days / $total_days) *
             <div class="attendance-stats" style="background-color: #e2e3e5; color: #383d41;">
                 <h5>Holidays</h5>
                 <h3><?php echo $holiday_days; ?></h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="attendance-stats" style="background-color: #f8f9fa; color: #212529;">
+                <h5>Working Days</h5>
+                <h3><?php echo $working_days; ?></h3>
             </div>
         </div>
     </div>

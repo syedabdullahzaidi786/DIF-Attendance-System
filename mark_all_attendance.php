@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     try {
         // Build the query based on selected filters
-        $query = "SELECT id FROM students WHERE 1=1";
+        $query = "SELECT id, roll_number, student_name FROM students WHERE 1=1";
         $params = [];
         
         if ($class) {
@@ -41,9 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $params[] = $section;
         }
         
+        $query .= " ORDER BY roll_number";
+        
         $stmt = $pdo->prepare($query);
         $stmt->execute($params);
-        $students = $stmt->fetchAll();
+        $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         if (empty($students)) {
             $error = "No students found matching the selected criteria.";
@@ -51,21 +53,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Get admin user ID for marking attendance
             $adminStmt = $pdo->prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
             $adminStmt->execute();
-            $admin = $adminStmt->fetch();
-            $adminId = $admin['id'];
+            $admin = $adminStmt->fetch(PDO::FETCH_ASSOC);
             
-            // Mark attendance for filtered students
-            $insertStmt = $pdo->prepare("
-                INSERT INTO attendance (student_id, date, status, marked_by, is_auto_marked, notes) 
-                VALUES (?, ?, ?, ?, FALSE, ?)
-                ON DUPLICATE KEY UPDATE status = VALUES(status), notes = VALUES(notes)
-            ");
-            
-            foreach ($students as $student) {
-                $insertStmt->execute([$student['id'], $date, $status, $adminId, $note]);
+            if (!$admin) {
+                $error = "No admin user found. Please create an admin user first.";
+            } else {
+                $adminId = $admin['id'];
+                $successCount = 0;
+                $failedStudents = [];
+                
+                // Start transaction
+                $pdo->beginTransaction();
+                
+                try {
+                    // First, delete any existing records for the date to prevent duplicates
+                    $deleteStmt = $pdo->prepare("DELETE FROM attendance WHERE date = ?");
+                    $deleteStmt->execute([$date]);
+                    
+                    // Mark attendance for filtered students
+                    $insertStmt = $pdo->prepare("
+                        INSERT INTO attendance (student_id, date, status, marked_by, is_auto_marked, notes) 
+                        VALUES (?, ?, ?, ?, FALSE, ?)
+                    ");
+                    
+                    foreach ($students as $student) {
+                        try {
+                            $insertStmt->execute([$student['id'], $date, $status, $adminId, $note]);
+                            $successCount++;
+                        } catch (PDOException $e) {
+                            $failedStudents[] = $student['roll_number'] . ' - ' . $student['student_name'];
+                        }
+                    }
+                    
+                    // Commit transaction
+                    $pdo->commit();
+                    
+                    // Verify the records were created
+                    $verifyStmt = $pdo->prepare("SELECT COUNT(*) FROM attendance WHERE date = ?");
+                    $verifyStmt->execute([$date]);
+                    $markedCount = $verifyStmt->fetchColumn();
+                    
+                    if ($markedCount == count($students)) {
+                        $success = "Attendance marked successfully for " . $successCount . " students on " . date('d-m-Y', strtotime($date));
+                    } else {
+                        $error = "Attendance marked for " . $markedCount . " out of " . count($students) . " students. Some records may not have been saved.";
+                    }
+                    
+                    if (!empty($failedStudents)) {
+                        $error .= "<br>Failed to mark attendance for: " . implode(", ", $failedStudents);
+                    }
+                    
+                } catch (PDOException $e) {
+                    // Rollback transaction on error
+                    $pdo->rollBack();
+                    $error = "Error marking attendance: " . $e->getMessage();
+                }
             }
-            
-            $success = "Attendance marked successfully for " . count($students) . " students on " . date('d-m-Y', strtotime($date));
         }
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
