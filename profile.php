@@ -130,7 +130,7 @@ if(!isset($_SESSION['user_id'])) {
                         <div class="row">
                             <div class="col-md-6">
                                 <h6>Current Version</h6>
-                                <p>Version 1.0.0 (Released: April 13, 2025)</p>
+                                <p>Version 3.0.0 (Released: April 21, 2025)</p>
                                 
                                 <h6 class="mt-4">Release Notes</h6>
                                 <ul>

@@ -4,6 +4,9 @@ if(isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit();
 }
+
+// reCAPTCHA configuration
+$recaptcha_site_key = "#"; // Replace with your site key
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +16,7 @@ if(isset($_SESSION['user_id'])) {
     <title>DIF Attendance System - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -94,7 +98,14 @@ if(isset($_SESSION['user_id'])) {
                 <div class="card-body p-4">
                     <?php if(isset($_GET['error'])): ?>
                         <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle me-2"></i>Invalid username or password
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <?php 
+                                if($_GET['error'] == 1) {
+                                    echo "Invalid username or password";
+                                } elseif($_GET['error'] == 2) {
+                                    echo "Please complete the reCAPTCHA verification";
+                                }
+                            ?>
                         </div>
                     <?php endif; ?>
                     
@@ -112,12 +123,15 @@ if(isset($_SESSION['user_id'])) {
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
                             </div>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                 <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                             </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_site_key; ?>"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-sign-in-alt me-2"></i> Login

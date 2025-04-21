@@ -22,6 +22,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                     </a>
                 </li>
+                <?php if ($user_role == 'admin'): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'attendance.php' ? 'active' : ''; ?>" href="attendance.php">
                         <i class="fas fa-qrcode me-1"></i>Attendance
@@ -32,6 +33,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                         <i class="fas fa-camera me-1"></i>Quick Scan
                     </a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'update_attendance.php' ? 'active' : ''; ?>" href="update_attendance.php">
                         <i class="fas fa-edit me-1"></i>Update Attendance
@@ -61,6 +63,11 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>" href="users.php">
                         <i class="fas fa-users me-1"></i>Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reports.php' ? 'active' : ''; ?>" href="admin_reports.php">
+                        <i class="fas fa-chart-line me-1"></i>Admin Reports
                     </a>
                 </li>
                 <li class="nav-item">

@@ -27,7 +27,7 @@ $total_users = $stmt->fetchColumn();
 
 // Get recent attendance records
 $stmt = $pdo->prepare("
-    SELECT a.*, s.student_name, s.class, s.section 
+    SELECT a.*, s.student_name, s.roll_number, s.class, s.section 
     FROM attendance a 
     JOIN students s ON a.student_id = s.id 
     ORDER BY a.date DESC 
@@ -148,6 +148,7 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th>GR No</th>
                                         <th>Student</th>
                                         <th>Class</th>
                                         <th>Date</th>
@@ -156,6 +157,7 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                                 <tbody>
                                     <?php foreach ($recent_attendance as $record): ?>
                                     <tr>
+                                        <td><?php echo htmlspecialchars($record['roll_number']); ?></td>
                                         <td><?php echo htmlspecialchars($record['student_name']); ?></td>
                                         <td><?php echo htmlspecialchars($record['class'] . ' ' . $record['section']); ?></td>
                                         <td><?php echo date('d M Y', strtotime($record['date'])); ?></td>
