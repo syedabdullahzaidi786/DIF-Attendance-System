@@ -5,8 +5,27 @@ if(isset($_SESSION['user_id'])) {
     exit();
 }
 
-// reCAPTCHA configuration
-$recaptcha_site_key = "#"; // Replace with your site key
+// Generate random math problem
+$num1 = rand(1, 10);
+$num2 = rand(1, 10);
+$operators = ['+', '-', '*'];
+$operator = $operators[array_rand($operators)];
+$answer = 0;
+
+switch($operator) {
+    case '+':
+        $answer = $num1 + $num2;
+        break;
+    case '-':
+        $answer = $num1 - $num2;
+        break;
+    case '*':
+        $answer = $num1 * $num2;
+        break;
+}
+
+// Store the answer in session
+$_SESSION['verification_answer'] = $answer;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +35,6 @@ $recaptcha_site_key = "#"; // Replace with your site key
     <title>DIF Attendance System - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -83,6 +101,25 @@ $recaptcha_site_key = "#"; // Replace with your site key
             font-weight: 700;
             margin-top: 10px;
         }
+        .verification-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .verification-problem {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0d47a1;
+        }
+        .verification-input {
+            max-width: 100px;
+            margin: 0 auto;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -103,7 +140,7 @@ $recaptcha_site_key = "#"; // Replace with your site key
                                 if($_GET['error'] == 1) {
                                     echo "Invalid username or password";
                                 } elseif($_GET['error'] == 2) {
-                                    echo "Please complete the reCAPTCHA verification";
+                                    echo "Please solve the verification problem correctly";
                                 }
                             ?>
                         </div>
@@ -131,7 +168,12 @@ $recaptcha_site_key = "#"; // Replace with your site key
                             </div>
                         </div>
                         <div class="mb-4">
-                            <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_site_key; ?>"></div>
+                            <div class="verification-box">
+                                <div class="verification-problem">
+                                    <?php echo $num1 . ' ' . $operator . ' ' . $num2 . ' = ?'; ?>
+                                </div>
+                                <input type="number" class="form-control verification-input" name="verification_answer" required>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-sign-in-alt me-2"></i> Login
