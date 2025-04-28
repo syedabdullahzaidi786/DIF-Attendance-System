@@ -1,6 +1,6 @@
 # DIF Attendance System
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 
@@ -65,7 +65,7 @@ A modern, web-based school attendance management system for schools and institut
 
 ## 🏷️ Versioning & Tags
 
-- **Current Version:** `1.0.0`
+- **Current Version:** `4.0.0`
 - **Release Tags:**  
   - `v1.0.0` - Initial public release  
   - *(Add more tags as you release new versions)*
@@ -192,7 +192,7 @@ This project is licensed under the MIT License.
 
 - **Developed by:** AR Developers
 - **Branding:** DIF Sec School
-- **Contact:** [Your contact info or support email]
+- **Contact:** ardevelopers622@gmail.com
 
 ---
 
