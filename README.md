@@ -1,60 +1,129 @@
-# School Attendance System
+# DIF Attendance System
 
-A QR Code-based attendance system for schools that allows marking attendance by scanning student QR codes and generates monthly attendance reports.
+A modern, web-based school attendance management system for schools and institutions. Built with PHP and MySQL, this system provides robust features for admins, teachers, and students, including attendance tracking, reporting, user management, and a secure maintenance mode.
 
-## Features
+---
 
-- QR Code-based attendance marking
-- Student management (add, view, delete)
-- Monthly attendance reports
-- Real-time attendance tracking
-- Modern and responsive UI
+## 🚀 Features
 
-## Requirements
+- **User Roles:**
+  - **Admin:** Full control (manage users, students, attendance, reports, maintenance mode)
+  - **Teacher:** Mark attendance, view reports
+  - **Student:** (Optional) View own attendance (if enabled)
 
-- Python 3.7 or higher
-- Web browser with camera access
-- SQLite (included with Python)
+- **Attendance Management:**
+  - Mark attendance (manual, by roll number, or quick scan)
+  - Bulk attendance update
+  - Auto attendance (if supported)
+  - Attendance status: Present, Absent, Leave, Half Day, Holiday
 
-## Installation
+- **Student Management:**
+  - Add, edit, delete students
+  - Generate and print student ID cards
+  - Search students
 
-1. Clone this repository
-2. Install the required packages:
-   ```
-   pip install -r requirements.txt
-   ```
+- **User Management:**
+  - Add, edit, delete users (admin/teacher)
+  - Prevent deletion of last admin
 
-## Usage
+- **Reports & Export:**
+  - Monthly, class-wise, and section-wise attendance reports
+  - Export attendance data as CSV
 
-1. Start the application:
-   ```
-   python app.py
-   ```
+- **Messaging:**
+  - Admin can send messages to users
+  - Message history and unread message notifications
 
-2. Open your web browser and go to `http://localhost:5000`
+- **Maintenance Mode:**
+  - Enable/disable maintenance mode from admin dashboard
+  - When ON: Only admin can login, others see a maintenance popup
+  - Customizable popup UI matching the login theme
 
-3. Add students:
-   - Click on "Students" in the navigation menu
-   - Click "Add New Student"
-   - Fill in the student details
-   - The system will generate a unique QR code for each student
+- **Security:**
+  - Session-based authentication
+  - Verification math problem on login
 
-4. Mark attendance:
-   - Click on "Scan QR" in the navigation menu
-   - Allow camera access when prompted
-   - Scan a student's QR code to mark their attendance
+- **Modern UI:**
+  - Responsive, clean design
+  - Custom branding (logo, colors)
 
-5. View reports:
-   - Click on "Reports" in the navigation menu
-   - Select the month and year
-   - Click "Generate Report" to view the attendance summary
+---
 
-## Security
+## 🛠️ Installation & Setup
 
-- Each student has a unique QR code
-- Attendance can only be marked once per day per student
-- All data is stored securely in a SQLite database
+1. **Clone or Download the Project**
 
-## Support
+2. **Database Setup:**
+   - Import `Database/database.sql` or `Database/difs_students_database.sql` into your MySQL server.
+   - Update `config/database.php` with your DB credentials.
 
-For any issues or questions, please contact the system administrator. "# DIF-Attendance-System" 
+3. **Configure Assets:**
+   - Place your logo in `assets/images/dif_logo.png` (or update the path in `index.php`)
+   - CSS is in `assets/css/admin.css`
+
+4. **Set Permissions:**
+   - Ensure the web server can write to `config/maintenance_mode.php` for maintenance toggle.
+
+5. **Run the App:**
+   - Open `index.php` in your browser.
+   - Default admin credentials are set in the database (change after first login).
+
+---
+
+## 📋 Usage Guide
+
+- **Login:** Go to `index.php` and login as admin or teacher.
+- **Dashboard:** View stats, quick actions, and recent activity.
+- **Attendance:** Mark attendance via different methods.
+- **Students:** Manage student records and ID cards.
+- **Users:** Manage admin/teacher accounts.
+- **Reports:** Generate and export attendance reports.
+- **Maintenance Mode:**
+  - Admin can enable/disable from dashboard.
+  - When ON, only admin can login; others see a themed popup.
+
+---
+
+## 🗂️ Project Structure
+
+```
+├── index.php                # Login page
+├── dashboard.php            # Main dashboard
+├── students.php             # Student management
+├── users.php                # User management
+├── attendance.php           # Attendance marking
+├── reports.php              # Attendance reports
+├── config/
+│   ├── database.php         # DB connection
+│   └── maintenance_mode.php # Maintenance mode toggle
+├── Database/
+│   └── *.sql                # Database schema
+├── assets/
+│   ├── images/              # Logos, images
+│   └── css/admin.css        # Main stylesheet
+├── auth/
+│   ├── login.php            # Login logic
+│   └── logout.php           # Logout logic
+├── components/
+│   └── navbar.php           # Reusable navbar
+└── ...                      # Other modules (messaging, export, etc.)
+```
+
+---
+
+## 👨‍💻 Credits & Support
+
+- **Developed by:** AR Developers
+- **Branding:** DIF Sec School
+- **Contact:** [Your contact info or support email]
+
+---
+
+## 📢 Notes
+- For any issues, please check your PHP version, file permissions, and database connection.
+- Customize the logo and colors in `assets/images/` and `assets/css/admin.css` as needed.
+- For production, always change default admin credentials and secure your config files.
+
+---
+
+Enjoy using the **DIF Attendance System**! 🎉
