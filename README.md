@@ -1,6 +1,20 @@
 # DIF Attendance System
 
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
+
 A modern, web-based school attendance management system for schools and institutions. Built with PHP and MySQL, this system provides robust features for admins, teachers, and students, including attendance tracking, reporting, user management, and a secure maintenance mode.
+
+---
+
+## 📸 Screenshots
+
+> **Add your screenshots in `assets/images/screenshots/` and link them here.**
+
+| Login Page | Dashboard | Maintenance Popup |
+|------------|-----------|------------------|
+| ![Login](assets/images/screenshots/login.png) | ![Dashboard](assets/images/screenshots/dashboard.png) | ![Maintenance](assets/images/screenshots/maintenance.png) |
 
 ---
 
@@ -46,6 +60,22 @@ A modern, web-based school attendance management system for schools and institut
 - **Modern UI:**
   - Responsive, clean design
   - Custom branding (logo, colors)
+
+---
+
+## 🏷️ Versioning & Tags
+
+- **Current Version:** `1.0.0`
+- **Release Tags:**  
+  - `v1.0.0` - Initial public release  
+  - *(Add more tags as you release new versions)*
+
+---
+
+## 📝 Changelog
+
+- **v1.0.0**
+  - Initial release with all core features (attendance, users, students, reports, maintenance mode, messaging, etc.)
 
 ---
 
@@ -99,7 +129,7 @@ A modern, web-based school attendance management system for schools and institut
 ├── Database/
 │   └── *.sql                # Database schema
 ├── assets/
-│   ├── images/              # Logos, images
+│   ├── images/              # Logos, images, screenshots
 │   └── css/admin.css        # Main stylesheet
 ├── auth/
 │   ├── login.php            # Login logic
@@ -111,18 +141,58 @@ A modern, web-based school attendance management system for schools and institut
 
 ---
 
+## 💻 Technologies Used
+
+- **Backend:** PHP 7+
+- **Database:** MySQL
+- **Frontend:** HTML5, CSS3, Bootstrap 5, FontAwesome
+- **Other:** JavaScript, jQuery
+
+---
+
+## ❓ FAQ
+
+**Q: Default admin credentials kya hain?**  
+A: Database mein set hain, pehli login ke baad change karen.
+
+**Q: Maintenance mode kaise enable/disable hota hai?**  
+A: Admin dashboard se toggle button se.
+
+**Q: Attendance data export kaise karen?**  
+A: Reports section mein export option hai (CSV).
+
+---
+
+## 🛠️ Troubleshooting
+
+- PHP version 7+ required
+- File permissions (especially `config/maintenance_mode.php`)
+- Database connection issues: check `config/database.php`
+- Browser cache clear karen agar UI update na ho
+
+---
+
+## 🤝 Contribution
+
+Pull requests welcome!  
+- Fork this repo
+- Create a feature branch
+- Commit your changes
+- Open a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
 ## 👨‍💻 Credits & Support
 
 - **Developed by:** AR Developers
 - **Branding:** DIF Sec School
 - **Contact:** [Your contact info or support email]
-
----
-
-## 📢 Notes
-- For any issues, please check your PHP version, file permissions, and database connection.
-- Customize the logo and colors in `assets/images/` and `assets/css/admin.css` as needed.
-- For production, always change default admin credentials and secure your config files.
 
 ---
 
