@@ -36,6 +36,17 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $recent_attendance = $stmt->fetchAll();
 
+// Get unread messages for the current user
+$stmt = $pdo->prepare("
+    SELECT m.*, u.username as sender_name 
+    FROM messages m 
+    JOIN users u ON m.sender_id = u.id 
+    WHERE m.receiver_id = ? AND m.is_read = 0 
+    ORDER BY m.created_at DESC
+");
+$stmt->execute([$_SESSION['user_id']]);
+$unread_messages = $stmt->fetchAll();
+
 // Calculate attendance percentage
 $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total_students) * 100) : 0;
 ?>
@@ -56,6 +67,22 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="page-title">Dashboard</h2>
+                <?php if ($_SESSION['role'] == 'admin'): ?>
+                <form method="POST" action="toggle_maintenance.php" class="mb-3 d-inline-block">
+                    <?php 
+                    $maintenance = include 'config/maintenance_mode.php';
+                    $is_enabled = $maintenance['enabled'];
+                    ?>
+                    <input type="hidden" name="toggle" value="1">
+                    <button type="submit" class="btn btn-sm <?php echo $is_enabled ? 'btn-danger' : 'btn-outline-success'; ?>">
+                        <i class="fas fa-tools me-1"></i>
+                        <?php echo $is_enabled ? 'Disable Maintenance Mode' : 'Enable Maintenance Mode'; ?>
+                    </button>
+                    <span class="ms-2 small <?php echo $is_enabled ? 'text-danger' : 'text-success'; ?>">
+                        <?php echo $is_enabled ? 'Maintenance Mode is ON' : 'Maintenance Mode is OFF'; ?>
+                    </span>
+                </form>
+                <?php endif; ?>
             </div>
         </div>
         
@@ -129,12 +156,61 @@ $attendance_percentage = $total_students > 0 ? round(($today_attendance / $total
                                     <i class="fas fa-users me-2"></i>Manage Users
                                 </a>
                             </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="send_message.php" class="btn btn-secondary w-100">
+                                    <i class="fas fa-envelope me-2"></i>Send Message
+                                </a>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Messages Section -->
+        <?php if (!empty($unread_messages)): ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-envelope me-2"></i>New Messages
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>From</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($unread_messages as $message): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($message['sender_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($message['message']); ?></td>
+                                        <td><?php echo date('d M Y H:i', strtotime($message['created_at'])); ?></td>
+                                        <td>
+                                            <form method="POST" action="mark_message_read.php" style="display: inline;">
+                                                <input type="hidden" name="message_id" value="<?php echo $message['id']; ?>">
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Mark as Read
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <!-- Recent Attendance -->
         <div class="row">

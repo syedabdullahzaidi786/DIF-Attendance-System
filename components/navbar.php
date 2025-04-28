@@ -85,6 +85,9 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="reports.php"><i class="fas fa-chart-bar me-2"></i>Reports</a></li>
+                        <?php if ($user_role == 'admin'): ?>
+                        <li><a class="dropdown-item" href="message_history.php"><i class="fas fa-history me-2"></i>Message History</a></li>
+                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>

@@ -26,13 +26,17 @@ switch($operator) {
 
 // Store the answer in session
 $_SESSION['verification_answer'] = $answer;
+
+// Maintenance mode check
+$maintenance = include 'config/maintenance_mode.php';
+$maintenance_enabled = $maintenance['enabled'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIF Attendance System - Login</title>
+    <title>AR Attendance Software - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -123,14 +127,49 @@ $_SESSION['verification_answer'] = $answer;
     </style>
 </head>
 <body>
+    <?php if ($maintenance_enabled): ?>
+    <div id="maintenance-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);padding:36px 28px;max-width:400px;width:100%;text-align:center;position:relative;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+            <button id="close-maintenance-modal" style="position:absolute;top:12px;right:12px;background:transparent;border:none;font-size:22px;color:#0d47a1;cursor:pointer;" aria-label="Close"><i class="fas fa-times"></i></button>
+            <div style="font-size:44px;color:#0d47a1;margin-bottom:10px;"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 style="font-weight:700;color:#0d47a1;">Maintenance Mode</h3>
+            <p style="font-size:18px;color:#b71c1c;font-weight:600;">The software is currently <span style='color:#e65100;'>under maintenance</span>.</p>
+            <div style="background:#e3eafc;border:1px solid #b6c6e6;border-radius:8px;padding:10px 0;margin:18px 0 10px 0;font-weight:700;color:#0d47a1;">Please Don't try to login at this time.</div>
+            <p style="font-size:15px;color:#6d4c41;">We apologize for the inconvenience and appreciate your patience.</p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.querySelector('form[action="auth/login.php"]');
+            var usernameInput = document.getElementById('username');
+            var closeBtn = document.getElementById('close-maintenance-modal');
+            function setFormState() {
+                if (usernameInput.value.trim().toLowerCase() === 'admin') {
+                    form.querySelectorAll('input,button,select,textarea').forEach(function(el){el.disabled=false;});
+                } else {
+                    form.querySelectorAll('input,button,select,textarea').forEach(function(el){el.disabled=true;});
+                    usernameInput.disabled = false;
+                }
+            }
+            setFormState();
+            usernameInput.addEventListener('input', setFormState);
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    var modal = document.getElementById('maintenance-modal');
+                    if (modal) modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
+    <?php endif; ?>
     <div class="container">
         <div class="login-container">
             <div class="card">
                 <div class="card-header">
                     <div class="logo-container">
-                        <img src="assets/images/dif_logo.png" alt="DIF Logo">
+                        <img src="assets/images/dif_logo.png" alt="Dif Logo">
                     </div>
-                    <h4 class="system-title mb-0">DIF Attendance System</h4>
+                <h4 class="system-title mb-0">DIF Attendance Software</h4>
                 </div>
                 <div class="card-body p-4">
                     <?php if(isset($_GET['error'])): ?>
