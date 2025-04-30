@@ -151,6 +151,20 @@ foreach ($students as $student) {
                             </div>
                         <?php endif; ?>
 
+                        <?php if(isset($_GET['msg']) && $_GET['msg'] == 'added'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>Student added successfully!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if(isset($_GET['error'])): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>Error: <?php echo htmlspecialchars($_GET['error']); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="table-responsive">
                             <table class="table table-hover" id="studentsTable">
                                 <thead>

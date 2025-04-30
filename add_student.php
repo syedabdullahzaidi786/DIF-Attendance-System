@@ -10,24 +10,26 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $roll_number = $_POST['roll_number'];
     $name = $_POST['name'];
+    $father_name = $_POST['father_name'];
     $class = $_POST['class'];
     $section = $_POST['section'];
     
-    // Generate unique QR code
-    $qr_code = uniqid($roll_number . '_', true);
-    
     try {
-        $stmt = $pdo->prepare("INSERT INTO students (roll_number, name, class, section, qr_code) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$roll_number, $name, $class, $section, $qr_code]);
+        $stmt = $pdo->prepare("INSERT INTO students (roll_number, student_name, father_name, class, section) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$roll_number, $name, $father_name, $class, $section]);
         
         header("Location: students.php?msg=added");
         exit();
     } catch (PDOException $e) {
+        // Log the error
+        error_log("Database Error: " . $e->getMessage());
+        
         if ($e->getCode() == 23000) { // Duplicate entry
             header("Location: students.php?error=duplicate");
             exit();
         }
-        header("Location: students.php?error=unknown");
+        // Show the actual error message instead of just "unknown"
+        header("Location: students.php?error=" . urlencode($e->getMessage()));
         exit();
     }
 } else {

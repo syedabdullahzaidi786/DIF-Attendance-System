@@ -81,6 +81,21 @@ CREATE TABLE `attendance` (
 -- Dumping data for table `students`
 --
 
+-- Create Table Messages:
+
+-- Create messages table
+CREATE TABLE IF NOT EXISTS messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+
+
 INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `class`, `section`) VALUES
 (1, 2, 'MUHAMMAD RAYYAN', 'MUHAMMAD YOUSUF', 'SPECIAL HIFZ', 'C'),
 (2, 3, 'HANIA WAHEED', 'ABDUL WAHEED', '9', 'A'),
@@ -201,12 +216,12 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (117, 318, 'MUHAMMAD SAALIM AZAMI', 'HUSSAIN AHMED AZAMI', '7', 'D'),
 (118, 319, 'ABDUL MUHAIMIN', 'ABDUL NAEEM', '7', 'C'),
 (119, 321, 'HAMDAH MEHBOOB', 'MEHBOOB AHMED', '8', 'B'),
-(120, 322, 'MUHAMMAD AHMED', 'MUHAMMAD KHURSHID', '8','C'),
+(120, 322, 'MUHAMMAD AHMED', 'MUHAMMAD KHURSHID', 'SPECIAL HIFZ','C'),
 (121, 324, 'MAHROSH', 'MUHAMMAD MOIN AKHTAR', 'SPECIAL HIFZ', 'B'),
 (122, 325, 'BAREERA ADNAN', 'ADNAN NASIR', '7', 'B'),
 (123, 331, 'MUHAMMAD SOHAIB KHAN', 'IMRAN ALI', '10', 'B'),
 (124, 333, 'MUHAMMAD SHORAIM', 'MUHAMMAD AHMED JAN', 'SPECIAL HIFZ', 'C'),
-(125, 335, 'MUHAMMAD SAAD', 'MUHAMMAD KHURSHID', '6', 'D'),
+(125, 335, 'MUHAMMAD SAAD', 'MUHAMMAD KHURSHID', 'HA-6', 'B'),
 (126, 337, 'MUHAMMAD SHAYAN', 'MEHBOOB AHMED', '6', 'D'),
 (127, 338, 'MUHAMMAD SHAIQ', 'MUHAMMAD SALMAN AFZAL', '6', 'C'),
 (128, 339, 'ABIHA RIZWAN', 'RIZWAN ALI', '6', 'A'),
@@ -247,7 +262,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (163, 406, 'MUHAMMAD MUSTAQEEM', 'ABDUL MALIK', '6', 'D'),
 (164, 407, 'SAFWAN', 'MUHAMMAD IRFAN', '6', 'C'),
 (165, 409, 'MUHAMMAD KHAN', 'MUHAMMAD REHAN', '6', 'C'),
-(166, 411, 'HOORIA', 'MUHAMMAD SIDDIQ', '6', 'A'),
 (167, 412, 'AISHA SHAHID', 'MUHAMMAD SHAHID', 'HA-6', 'A'),
 (168, 417, 'AREEBA', 'SYED MOAZZAN SHAH', 'SPECIAL HIFZ', 'B'),
 (169, 422, 'MOHAMMAD AHMED JAMALI', 'MOHSIN AHMED JAMALI', '7', 'C'),
@@ -359,7 +373,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (276, 688, 'MOUNAAM MUKARRAM HUSSAIN', 'MUKARRAM KAZIM', 'HA-4', 'B'),
 (277, 689, 'HABIBA AHSAN', 'MUHAMMAD AHSAN', '4', 'A'),
 (278, 690, 'MUHAMMAD SUNAIN', 'MUHAMMAD MOOSA', '4', 'C'),
-(279, 691, 'ABDUL RAFAY KHAN', 'AMEEN AKHTAR', '4', 'D'),
 (280, 693, 'AYESHA JUNAID', 'MUHAMMAD JUNAID', '4', 'A'),
 (281, 694, 'MUHAMMAD DAIM', 'MUHAMMAD JAMAL NASIR', '4', 'C'),
 (282, 696, 'SYED MUHAMMAD MAAZ', 'SYED M USAMA HAMEED', '4', 'D'),
@@ -679,7 +692,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (597, 1191, 'MUHAMMAD HUNAIN', 'MANSOOR SAMAD', '3', 'E'),
 (598, 1192, 'ABEEHA FATIMA', 'USAMA AHMED', '3', 'A'),
 (599, 1193, 'AZFIA NADEEM', 'MUHAMMAD NADEEM', '3', 'A'),
-(600, 1194, 'AFRAZ AHMED WARSI', 'SOHAIL AHMED WARSI', '3', 'D'),
 (601, 1195, 'MUSIRA', 'MUHAMMAD MASROOR ASIF', '3', 'B'),
 (602, 1196, 'BAREERA', 'NADIR', '3', 'D'),
 (603, 1199, 'BISMA ALI', 'NOSHAD ALI', '9', 'A'),
@@ -845,7 +857,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (764, 1421, 'AZIZA', 'GHULAM NABI', '10', 'A'),
 (765, 1422, 'ZUHA', 'MUHAMMAD NAZEEM', '7', 'B'),
 (766, 1423, 'MIRHA SALMAN', 'MUHAMMAD SALMAN', '1', 'A'),
-(767, 1424, 'ABDUL HADI KHAN', 'AMEEN AKHTAR', '1', 'D'),
 (768, 1429, 'MUHAMMAD ANAS', 'MUHAMMAD ZEESHAN', 'HA-7', 'B'),
 (769, 1430, 'UMER AYAZ', 'AYAZ ALI', '7', 'D'),
 (770, 1431, 'HADIA', 'MUHAMMAD ASAD ULLAH KHAN', '7', 'A'),
@@ -932,7 +943,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (851, 1528, 'SHAHEER', 'JUNAID MUNEER', 'SENIOR LEVEL 2', 'B'),
 (852, 1531, 'MUNTAHA ASAD ALI ABBASI', 'ASAD AYUB ALI ABBASI', 'SENIOR LEVEL 2', 'D'),
 (853, 1532, 'ZIMAL', 'MUHAMMAD ZUBAIR KHALID', 'SENIOR LEVEL 2', 'D'),
-(854, 1533, 'ABDUL HADI', 'ABDUL NASIR', 'SENIOR LEVEL 2', 'D'),
 (855, 1534, 'MUHAMMAD HANZALA', 'SIKANDAR SUNNY', 'SENIOR LEVEL 2', 'A'),
 (856, 1535, 'SAIF ULLAH', 'KHALID BIN IQBAL', 'SENIOR LEVEL 2', 'D'),
 (857, 1536, 'FARNAZ ZAHRA', 'SHAHNAWAZ', 'SENIOR LEVEL 2', 'A'),
@@ -1002,7 +1012,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (921, 1606, 'UMM-E-EMAN', 'MUHAMMAD UMAR', '7', 'A'),
 (922, 1607, 'ABDUL WAHAB', 'ARSLAN AHMED', 'SENIOR LEVEL 2', 'D'),
 (923, 1609, 'MUSTAFA GHAZI', 'ARMAN GHAZI', 'SENIOR LEVEL 2', 'D'),
-(924, 1610, 'SHAZMEEN SHEIKH', 'SHEIKH ABID JAMIL', '9', 'B'),
 (925, 1612, 'SHEIKH MUHAMMAD YOUSUF', 'SHEIKH MUHAMMAD EHTISHAM', '1', 'D'),
 (926, 1614, 'BURHAN AHMED', 'FURQAN AHMED', '1', 'D'),
 (927, 1615, 'ABDUL HADI KHAN', 'MUHAMMAD IMRAN KHAN', '1', 'C'),
@@ -1077,7 +1086,6 @@ INSERT INTO `students` (`id`, `roll_number`, `student_name`, `father_name`, `cla
 (996, 1695, 'MIRAB FATIMA', 'MUHAMMAD FARHAN', '3', 'B'),
 (997, 1697, 'SHEEZA', 'MUHAMMAD SHAHBAZ', 'HA-5', 'A'),
 (998, 1703, 'UMM-E-HANI', 'MUHAMMAD SOHAIL', '3', 'C'),
-(999, 1704, 'MUHAMMAD UMAR FAROOQ', 'NIZAM UDDIN', '2', 'D'),
 (1000, 1705, 'MUHAMMAD AROUSH BAIG', 'AJMAL BAIG', 'HA-5', 'B'),
 (1001, 1706, 'MARYAM FATIMA', 'HAMID ALI', '1', 'A'),
 (1002, 1708, 'MUHAMMAD RAWAHA', 'RIZWAN UL QADAR MAJIDI', '2', 'C'),
